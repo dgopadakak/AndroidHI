@@ -9,14 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.androidhi.R
 
 class CustomRecyclerAdapterForExams(private val namesE: List<String>,
-                                    private val namesT: List<String>/*,
-                                   private val highlighted: List<Int>*/):
+                                    private val addresses: List<String>,
+                                   private val numbers: List<Int>):
     RecyclerView.Adapter<CustomRecyclerAdapterForExams.MyViewHolder>()
 {
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
         val layoutItem: ConstraintLayout = itemView.findViewById(R.id.layoutItem)
         val textViewName: TextView = itemView.findViewById(R.id.textViewName)
+        val textViewAddress: TextView = itemView.findViewById(R.id.textViewAddress)
         val textViewNum: TextView = itemView.findViewById(R.id.textViewNum)
     }
 
@@ -30,14 +31,8 @@ class CustomRecyclerAdapterForExams(private val namesE: List<String>,
     override fun onBindViewHolder(holder: MyViewHolder, position: Int)
     {
         holder.textViewName.text = namesE[position]
-        holder.textViewNum.text = namesT[position]
-//        for (i in highlighted)
-//        {
-//            if (position == i)
-//            {
-//                holder.layoutItem.setBackgroundColor(Color.GRAY)
-//            }
-//        }
+        holder.textViewAddress.text = addresses[position]
+        holder.textViewNum.text = numbers[position].toString()
     }
 
     override fun getItemCount() = namesE.size

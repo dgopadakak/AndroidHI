@@ -5,8 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -48,7 +46,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var startTime: Long = 0
 
     private lateinit var db: AppDatabase
-    private lateinit var goDao: PharmacyChainOperatorDao
+    private lateinit var pcoDao: PharmacyChainOperatorDao
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var nv: NavigationView
@@ -57,7 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var textViewForStart: TextView
     private lateinit var recyclerViewExams: RecyclerView
 
-    private var go: PharmacyChainOperator = PharmacyChainOperator()
+    private var pco: PharmacyChainOperator = PharmacyChainOperator()
     private var currentChainID: Int = -1
     private var currentPharmacyID: Int = -1
     private var waitingForUpdate: Boolean = false
@@ -95,8 +93,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     override fun onItemClick(view: View, position: Int)
                     {
                         currentPharmacyID = position
+                        Snackbar.make(findViewById(R.id.app_bar_main),
+                                "С ${pco.getExam(currentChainID, currentPharmacyID).timeOpen} " +
+                                        "по ${pco.getExam(currentChainID, currentPharmacyID)
+                                            .timeClose}", Snackbar.LENGTH_LONG)
+                                .show()
+                    }
+                    override fun onItemLongClick(view: View, position: Int)
+                    {
+                        currentPharmacyID = position
                         val examDetails = PharmacyDetailsDialogFragment()
-                        val tempExam = go.getExam(currentChainID, currentPharmacyID)
+                        val tempExam = pco.getExam(currentChainID, currentPharmacyID)
                         val bundle = Bundle()
                         bundle.putString("name", tempExam.nameOfPharmacy)
                         bundle.putString("address", tempExam.address)
@@ -110,41 +117,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         examDetails.arguments = bundle
                         examDetails.show(fragmentManager, "MyCustomDialog")
                     }
-                    override fun onItemLongClick(view: View, position: Int)
-                    {
-                        if (connectionStage == 1)
-                        {
-                            currentPharmacyID = position
-                            val manager: FragmentManager = supportFragmentManager
-                            val myDialogFragmentDelPharmacy = MyDialogFragmentDelPharmacy()
-                            val bundle = Bundle()
-                            bundle.putString(
-                                "name",
-                                go.getExam(currentChainID, currentPharmacyID).nameOfPharmacy
-                            )
-                            myDialogFragmentDelPharmacy.arguments = bundle
-                            myDialogFragmentDelPharmacy.show(manager, "myDialog")
-                        }
-                        else
-                        {
-                            Snackbar.make(findViewById(R.id.app_bar_main),
-                                "Приложение оффлайн!", Snackbar.LENGTH_LONG)
-                                .setBackgroundTint(Color.RED)
-                                .show()
-                        }
-                        val vibrator = this@MainActivity.getSystemService(
-                            VIBRATOR_SERVICE
-                        ) as Vibrator
-                        vibrator.vibrate(
-                            VibrationEffect.createOneShot(200
-                                , VibrationEffect.DEFAULT_AMPLITUDE))
-                    }
                 }
             )
         )
 
         db = App.instance?.database!!
-        goDao = db.groupOperatorDao()
+        pcoDao = db.groupOperatorDao()
         startTime = System.currentTimeMillis()
         connection = Connection(serverIP, serverPort, "REFRESH", this)
     }
@@ -250,11 +228,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         connectionStage = -1
                         activity.runOnUiThread { progressBar.visibility = View.INVISIBLE
                             textViewForStart.visibility = View.VISIBLE }
-                        go = goDao.getById(1)
-                        for (i in 0 until go.getPharmacyChains().size)
+                        pco = pcoDao.getById(1)
+                        for (i in 0 until pco.getPharmacyChains().size)
                         {
                             activity.runOnUiThread { nv.menu.add(0, i, 0,
-                                go.getPharmacyChains()[i].name as CharSequence) }
+                                pco.getPharmacyChains()[i].name as CharSequence) }
                         }
                     }
                 }
@@ -268,9 +246,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         private fun processingInputStream(text: String)
         {
-            goDao.delete(PharmacyChainOperator())
+            pcoDao.delete(PharmacyChainOperator())
             val tempGo: PharmacyChainOperator = gson.fromJson(text, PharmacyChainOperator::class.java)
-            goDao.insert(tempGo)
+            pcoDao.insert(tempGo)
 
             if (connectionStage != 1)
             {
@@ -287,12 +265,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             {
                 textViewForStart.visibility = View.VISIBLE
             }
-            for (i in 0 until go.getPharmacyChains().size)
+            for (i in 0 until pco.getPharmacyChains().size)
             {
                 nv.menu.removeItem(i)
             }
             val tempArrayListPharmacyChains: ArrayList<PharmacyChain> = /*dbh.getAllData()*/tempGo.getPharmacyChains()
-            go.setPharmacyChains(tempArrayListPharmacyChains)
+            pco.setPharmacyChains(tempArrayListPharmacyChains)
             for (i in 0 until tempArrayListPharmacyChains.size)
             {
                 nv.menu.add(
@@ -306,8 +284,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (currentChainID != -1)
                 {
                     recyclerViewExams.adapter = CustomRecyclerAdapterForExams(
-                        go.getExamsNames(currentChainID),
-                        go.getTeachersNames(currentChainID)
+                        pco.getPharmaciesNames(currentChainID),
+                        pco.getPharmaciesAddresses(currentChainID),
+                        pco.getPharmaciesNumbers(currentChainID)
                     )
                 }
             }
@@ -333,8 +312,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toolbar.title = groupTitle
         invalidateOptionsMenu()
         currentChainID = item.itemId
-        recyclerViewExams.adapter = CustomRecyclerAdapterForExams(go.getExamsNames(currentChainID),
-            go.getTeachersNames(currentChainID))
+        recyclerViewExams.adapter = CustomRecyclerAdapterForExams(
+            pco.getPharmaciesNames(currentChainID),
+            pco.getPharmaciesAddresses(currentChainID),
+            pco.getPharmaciesNumbers(currentChainID))
         recyclerViewExams.visibility = View.VISIBLE
         return true
     }
@@ -349,10 +330,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     {
         if (sortId > -1 && sortId < 8)      // Сортировка
         {
-            go.sortExams(currentChainID, sortId)
+            pco.sortExams(currentChainID, sortId)
             if (connectionStage == 1)
             {
-                connection.sendDataToServer("u" + gson.toJson(go))
+                connection.sendDataToServer("u" + gson.toJson(pco))
             }
             toolbar.title = when (sortId)
             {
@@ -372,13 +353,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val manager: FragmentManager = supportFragmentManager
             val myDialogFragmentDelPharmacy = MyDialogFragmentDelPharmacy()
             val bundle = Bundle()
-            bundle.putString("name", go.getExam(currentChainID, currentPharmacyID).nameOfPharmacy)
+            bundle.putString("name", pco.getExam(currentChainID, currentPharmacyID).nameOfPharmacy)
             myDialogFragmentDelPharmacy.arguments = bundle
             myDialogFragmentDelPharmacy.show(manager, "myDialog")
         }
         if (sortId == 9)        // Изменение
         {
-            val tempExam = go.getExam(currentChainID, currentPharmacyID)
+            val tempExam = pco.getExam(currentChainID, currentPharmacyID)
             val intent = Intent()
             intent.setClass(this, EditPharmacyActivity::class.java)
             intent.putExtra("action", 2)
@@ -393,8 +374,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             startActivityForResult(intent, 1)
         }
         recyclerViewExams.adapter = CustomRecyclerAdapterForExams(
-            go.getExamsNames(currentChainID),
-            go.getTeachersNames(currentChainID))
+            pco.getPharmaciesNames(currentChainID),
+            pco.getPharmaciesAddresses(currentChainID),
+            pco.getPharmaciesNumbers(currentChainID))
     }
 
     @Deprecated("Deprecated in Java")
@@ -418,7 +400,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             if (action == 1)
             {
-                val tempStringToSend = "a${go.getPharmacyChains()[currentChainID].name}##$tempExamJSON"
+                val tempStringToSend = "a${pco.getPharmacyChains()[currentChainID].name}##$tempExamJSON"
                 connection.sendDataToServer(tempStringToSend)
                 waitingForUpdate = true
             }

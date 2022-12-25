@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.androidhi.firm.dbWithRoom.PharmacyChainOperatorConverter
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Entity
 class PharmacyChainOperator()
@@ -35,7 +36,7 @@ class PharmacyChainOperator()
         return id
     }
 
-    fun getExamsNames(indexGroup: Int): ArrayList<String>
+    fun getPharmaciesNames(indexGroup: Int): ArrayList<String>
     {
         val arrayListForReturn: ArrayList<String> = ArrayList()
         for (i in pharmacyChains[indexGroup].listOfPharmacies)
@@ -45,12 +46,22 @@ class PharmacyChainOperator()
         return arrayListForReturn
     }
 
-    fun getTeachersNames(indexGroup: Int): ArrayList<String>
+    fun getPharmaciesAddresses(indexGroup: Int): ArrayList<String>
     {
         val arrayListForReturn: ArrayList<String> = ArrayList()
         for (i in pharmacyChains[indexGroup].listOfPharmacies)
         {
             arrayListForReturn.add(i.address)
+        }
+        return arrayListForReturn
+    }
+
+    fun getPharmaciesNumbers(indexGroup: Int): ArrayList<Int>
+    {
+        val arrayListForReturn: ArrayList<Int> = ArrayList()
+        for (i in pharmacyChains[indexGroup].listOfPharmacies)
+        {
+            arrayListForReturn.add(i.num)
         }
         return arrayListForReturn
     }

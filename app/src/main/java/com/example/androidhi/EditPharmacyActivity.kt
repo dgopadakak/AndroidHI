@@ -24,7 +24,7 @@ class EditPharmacyActivity : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_exam)
+        setContentView(R.layout.activity_edit_pharmacy)
 
         editName = findViewById(R.id.editTextExamName)
         editAddress = findViewById(R.id.editTextTeacherName)

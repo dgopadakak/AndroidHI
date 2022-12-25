@@ -50,7 +50,7 @@ class PharmacyDetailsDialogFragment: android.app.DialogFragment()
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View
     {
-        val view: View = inflater!!.inflate(R.layout.exam_details, container, false)
+        val view: View = inflater!!.inflate(R.layout.pharmacy_details, container, false)
         textViewNameTitle = view.findViewById(R.id.textViewExamNameTitle)
         textViewName = view.findViewById(R.id.textViewExamName)
         textViewAddressTitle = view.findViewById(R.id.textViewTeacherNameTitle)

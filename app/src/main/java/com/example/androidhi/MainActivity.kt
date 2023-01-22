@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
@@ -54,6 +55,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var progressBar: ProgressBar
     private lateinit var textViewForStart: TextView
     private lateinit var recyclerViewExams: RecyclerView
+    private var resultLauncher = registerForActivityResult(
+        ActivityResultContracts
+            .StartActivityForResult())
+    { result ->
+        if (result.resultCode == Activity.RESULT_OK)
+        {
+            val data: Intent? = result.data
+            processOnActivityResult(data)
+        }
+    }
 
     private var pco: PharmacyChainOperator = PharmacyChainOperator()
     private var currentChainID: Int = -1
@@ -151,7 +162,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val intent = Intent()
             intent.setClass(this, EditPharmacyActivity::class.java)
             intent.putExtra("action", 1)
-            startActivityForResult(intent, 1)
+            resultLauncher.launch(intent)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -371,7 +382,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             intent.putExtra("parking", tempExam.parkingSpaces.toString())
             intent.putExtra("delivery", tempExam.isDelivery.toString())
             intent.putExtra("comment", tempExam.comment)
-            startActivityForResult(intent, 1)
+            resultLauncher.launch(intent)
         }
         recyclerViewExams.adapter = CustomRecyclerAdapterForExams(
             pco.getPharmaciesNames(currentChainID),
@@ -379,37 +390,40 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             pco.getPharmaciesNumbers(currentChainID))
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
+    private fun processOnActivityResult(data: Intent?)
     {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK)
-        {
-            val action = data?.getSerializableExtra("action") as Int
-            val examName = data.getSerializableExtra("name") as String
-            val teacherName = data.getSerializableExtra("address") as String
-            val auditory = data.getSerializableExtra("number") as Int
-            val date = data.getSerializableExtra("timeOpen") as String
-            val time = data.getSerializableExtra("timeClose") as String
-            val people = data.getSerializableExtra("parking") as Int
-            val abstract = data.getSerializableExtra("delivery") as Int
-            val comment = data.getSerializableExtra("comment") as String
-            val tempPharmacy = Pharmacy(examName, teacherName, auditory, date, time, people
-                , abstract, comment)
-            val tempExamJSON: String = gson.toJson(tempPharmacy)
+        val action = data!!.getIntExtra("action", -1)
+        val examName = data.getStringExtra("name")
+        val teacherName = data.getStringExtra("address")
+        val auditory = data.getIntExtra("number", -1)
+        val date = data.getStringExtra("timeOpen")
+        val time = data.getStringExtra("timeClose")
+        val people = data.getIntExtra("parking", -1)
+        val abstract = data.getIntExtra("delivery", 0)
+        val comment = data.getStringExtra("comment")
+        val tempPharmacy = Pharmacy(examName!!, teacherName!!, auditory, date!!, time!!, people
+            , abstract, comment!!)
+        val tempExamJSON: String = gson.toJson(tempPharmacy)
 
-            if (action == 1)
-            {
-                val tempStringToSend = "a${pco.getPharmacyChains()[currentChainID].name}##$tempExamJSON"
-                connection.sendDataToServer(tempStringToSend)
-                waitingForUpdate = true
-            }
-            if (action == 2)
-            {
-                val tempStringToSend = "e$currentChainID,$currentPharmacyID##$tempExamJSON"
-                connection.sendDataToServer(tempStringToSend)
-                waitingForUpdate = true
-            }
+        if (action == 1)
+        {
+            val tempStringToSend = "a${pco.getPharmacyChains()[currentChainID].name}##$tempExamJSON"
+            connection.sendDataToServer(tempStringToSend)
+            waitingForUpdate = true
+        }
+        if (action == 2)
+        {
+            val tempStringToSend = "e$currentChainID,$currentPharmacyID##$tempExamJSON"
+            connection.sendDataToServer(tempStringToSend)
+            waitingForUpdate = true
+        }
+        if (action == -1)
+        {
+            Snackbar.make(findViewById(R.id.app_bar_main),
+                "Ошибка добавления/изменения!",
+                Snackbar.LENGTH_LONG)
+                .setBackgroundTint(Color.RED)
+                .show()
         }
     }
 }

@@ -393,16 +393,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun processOnActivityResult(data: Intent?)
     {
         val action = data!!.getIntExtra("action", -1)
-        val examName = data.getStringExtra("name")
-        val teacherName = data.getStringExtra("address")
-        val auditory = data.getIntExtra("number", -1)
-        val date = data.getStringExtra("timeOpen")
-        val time = data.getStringExtra("timeClose")
-        val people = data.getIntExtra("parking", -1)
-        val abstract = data.getIntExtra("delivery", 0)
+        val name = data.getStringExtra("name")
+        val address = data.getStringExtra("address")
+        val number = data.getIntExtra("number", -1)
+        val timeOpen = data.getStringExtra("timeOpen")
+        val timeClose = data.getStringExtra("timeClose")
+        val parking = data.getIntExtra("parking", -1)
+        val delivery = data.getIntExtra("delivery", 0)
         val comment = data.getStringExtra("comment")
-        val tempPharmacy = Pharmacy(examName!!, teacherName!!, auditory, date!!, time!!, people
-            , abstract, comment!!)
+        val tempPharmacy = Pharmacy(name!!, address!!, number, timeOpen!!, timeClose!!, parking
+            , delivery, comment!!)
         val tempExamJSON: String = gson.toJson(tempPharmacy)
 
         if (action == 1)

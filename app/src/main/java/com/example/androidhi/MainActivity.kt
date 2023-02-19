@@ -105,25 +105,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     {
                         currentPharmacyID = position
                         Snackbar.make(findViewById(R.id.app_bar_main),
-                                "С ${pco.getExam(currentChainID, currentPharmacyID).timeOpen} " +
-                                        "по ${pco.getExam(currentChainID, currentPharmacyID)
-                                            .timeClose}", Snackbar.LENGTH_LONG)
+                                "С ${pco.getPharmacy(currentChainID, currentPharmacyID)
+                                    .timeOpen} " + "по ${pco
+                                    .getPharmacy(currentChainID, currentPharmacyID).timeClose}",
+                            Snackbar.LENGTH_LONG)
                                 .show()
                     }
                     override fun onItemLongClick(view: View, position: Int)
                     {
                         currentPharmacyID = position
                         val examDetails = PharmacyDetailsDialogFragment()
-                        val tempExam = pco.getExam(currentChainID, currentPharmacyID)
+                        val tempPharmacy = pco.getPharmacy(currentChainID, currentPharmacyID)
                         val bundle = Bundle()
-                        bundle.putString("name", tempExam.nameOfPharmacy)
-                        bundle.putString("address", tempExam.address)
-                        bundle.putString("number", tempExam.num.toString())
-                        bundle.putString("timeOpen", tempExam.timeOpen)
-                        bundle.putString("timeClose", tempExam.timeClose)
-                        bundle.putString("parking", tempExam.parkingSpaces.toString())
-                        bundle.putString("delivery", tempExam.isDelivery.toString())
-                        bundle.putString("comment", tempExam.comment)
+                        bundle.putString("name", tempPharmacy.nameOfPharmacy)
+                        bundle.putString("address", tempPharmacy.address)
+                        bundle.putString("number", tempPharmacy.num.toString())
+                        bundle.putString("timeOpen", tempPharmacy.timeOpen)
+                        bundle.putString("timeClose", tempPharmacy.timeClose)
+                        bundle.putString("parking", tempPharmacy.parkingSpaces.toString())
+                        bundle.putString("delivery", tempPharmacy.isDelivery.toString())
+                        bundle.putString("comment", tempPharmacy.comment)
                         bundle.putString("connection", connectionStage.toString())
                         examDetails.arguments = bundle
                         examDetails.show(fragmentManager, "MyCustomDialog")
@@ -280,7 +281,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             {
                 nv.menu.removeItem(i)
             }
-            val tempArrayListPharmacyChains: ArrayList<PharmacyChain> = /*dbh.getAllData()*/tempGo.getPharmacyChains()
+            val tempArrayListPharmacyChains: ArrayList<PharmacyChain> = tempGo.getPharmacyChains()
             pco.setPharmacyChains(tempArrayListPharmacyChains)
             for (i in 0 until tempArrayListPharmacyChains.size)
             {
@@ -331,7 +332,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun delExam()
+    fun delPharmacy()
     {
         connection.sendDataToServer("d$currentChainID,$currentPharmacyID")
         waitingForUpdate = true
@@ -341,7 +342,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     {
         if (sortId > -1 && sortId < 8)      // Сортировка
         {
-            pco.sortExams(currentChainID, sortId)
+            pco.sortPharmacy(currentChainID, sortId)
             if (connectionStage == 1)
             {
                 connection.sendDataToServer("u" + gson.toJson(pco))
@@ -364,13 +365,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val manager: FragmentManager = supportFragmentManager
             val myDialogFragmentDelPharmacy = MyDialogFragmentDelPharmacy()
             val bundle = Bundle()
-            bundle.putString("name", pco.getExam(currentChainID, currentPharmacyID).nameOfPharmacy)
+            bundle.putString("name", pco.getPharmacy(currentChainID, currentPharmacyID).nameOfPharmacy)
             myDialogFragmentDelPharmacy.arguments = bundle
             myDialogFragmentDelPharmacy.show(manager, "myDialog")
         }
         if (sortId == 9)        // Изменение
         {
-            val tempExam = pco.getExam(currentChainID, currentPharmacyID)
+            val tempExam = pco.getPharmacy(currentChainID, currentPharmacyID)
             val intent = Intent()
             intent.setClass(this, EditPharmacyActivity::class.java)
             intent.putExtra("action", 2)

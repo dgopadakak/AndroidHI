@@ -25,7 +25,7 @@
     <string name="time_close_hint">Время закрытия</string>
     <string name="parking_hint">Количество парковочных мест</string>
     <string name="is_delivery_hint">Да/Нет</string>
-    <string name="comment_hint">Введите комментаий</string>
+    <string name="comment_hint">Введите комментарий</string>
     <string name="plus_button_description">Довавить экзамен</string>
     <string name="plus">➕</string>
     <string name="for_start">← NavigationView</string>

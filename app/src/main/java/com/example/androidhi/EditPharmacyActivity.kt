@@ -35,19 +35,19 @@ class EditPharmacyActivity : AppCompatActivity()
         editDelivery = findViewById(R.id.editTextAbstract)
         editComment = findViewById(R.id.editTextComment)
 
-        val action = intent.getSerializableExtra("action") as Int
+        val action = intent.getIntExtra("action", -1)
 
         findViewById<Button>(R.id.button_confirm).setOnClickListener { confirmChanges(action) }
 
         if (action == 2)
         {
-            editName.setText(intent.getSerializableExtra("name") as String)
-            editAddress.setText(intent.getSerializableExtra("address") as String)
-            editNumber.setText(intent.getSerializableExtra("number") as String)
-            editTimeOpen.setText(intent.getSerializableExtra("timeOpen") as String)
-            editTimeClose.setText(intent.getSerializableExtra("timeClose") as String)
-            editParking.setText(intent.getSerializableExtra("parking") as String)
-            if (intent.getSerializableExtra("delivery") as String == "1")
+            editName.setText(intent.getStringExtra("name") as String)
+            editAddress.setText(intent.getStringExtra("address") as String)
+            editNumber.setText(intent.getStringExtra("number") as String)
+            editTimeOpen.setText(intent.getStringExtra("timeOpen") as String)
+            editTimeClose.setText(intent.getStringExtra("timeClose") as String)
+            editParking.setText(intent.getStringExtra("parking") as String)
+            if (intent.getStringExtra("delivery") as String == "1")
             {
                 editDelivery.setText("да")
             }
@@ -55,7 +55,7 @@ class EditPharmacyActivity : AppCompatActivity()
             {
                 editDelivery.setText("нет")
             }
-            editComment.setText(intent.getSerializableExtra("comment") as String)
+            editComment.setText(intent.getStringExtra("comment") as String)
         }
     }
 
@@ -64,7 +64,7 @@ class EditPharmacyActivity : AppCompatActivity()
         if (editName.text.toString() != "" && editAddress.text.toString() != ""
             && editNumber.text.toString() != "" && editTimeOpen.text.toString() != ""
             && editTimeClose.text.toString() != "" && editParking.text.toString() != ""
-            && editDelivery.text.toString() != "")
+            && editDelivery.text.toString() != "" && editComment.text.toString() != "")
         {
             if (editDelivery.text.toString().trim().lowercase(Locale.ROOT) == "да"
                 || editDelivery.text.toString().trim().lowercase(Locale.ROOT) == "нет")
@@ -113,7 +113,7 @@ class EditPharmacyActivity : AppCompatActivity()
         else
         {
             Snackbar.make(findViewById(R.id.button_confirm),
-                "Заполните обязательные поля!", Snackbar.LENGTH_LONG)
+                "Заполните все поля!", Snackbar.LENGTH_LONG)
                 .setBackgroundTint(Color.RED)
                 .show()
         }

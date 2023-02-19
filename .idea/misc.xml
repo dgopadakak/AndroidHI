@@ -4,10 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/ASProj/AndroidHI/app/src/main/res/layout/activity_edit_exam.xml" value="0.18703703703703703" />
-        <entry key="..\:/ASProj/AndroidHI/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/ASProj/AndroidHI/app/src/main/res/layout/activity_edit_pharmacy.xml" value="0.36666666666666664" />
+        <entry key="..\:/ASProj/AndroidHI/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/ASProj/AndroidHI/app/src/main/res/layout/app_bar_main.xml" value="0.5" />
         <entry key="..\:/ASProj/AndroidHI/app/src/main/res/layout/content_main.xml" value="0.36666666666666664" />
         <entry key="..\:/ASProj/AndroidHI/app/src/main/res/layout/exam_details.xml" value="0.21041666666666667" />
+        <entry key="..\:/ASProj/AndroidHI/app/src/main/res/layout/pharmacy_details.xml" value="0.36666666666666664" />
         <entry key="..\:/ASProj/AndroidHI/app/src/main/res/layout/recyclerview_item.xml" value="0.67" />
         <entry key="..\:/ASProj/AndroidHI/app/src/main/res/menu/activity_main_drawer.xml" value="0.2528205128205128" />
         <entry key="..\:/ASProj/AndroidHI/app/src/main/res/menu/main.xml" value="0.67" />

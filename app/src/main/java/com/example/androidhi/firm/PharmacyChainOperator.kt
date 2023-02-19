@@ -66,12 +66,12 @@ class PharmacyChainOperator()
         return arrayListForReturn
     }
 
-    fun getExam(indexGroup: Int, indexExam: Int): Pharmacy
+    fun getPharmacy(indexGroup: Int, indexExam: Int): Pharmacy
     {
         return pharmacyChains[indexGroup].listOfPharmacies[indexExam]
     }
 
-    fun sortExams(indexGroup: Int, sortIndex: Int)
+    fun sortPharmacy(indexGroup: Int, sortIndex: Int)
     {
         if (sortIndex == 0)
         {
